@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/domain/appUser.dart';
+import 'package:flutter_app/services/auth.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class AuthorizationPage extends StatefulWidget {
   @override
@@ -32,6 +35,7 @@ class _AuthorizationPageState extends State<AuthorizationPage> {
   String _email;
   String _password;
   bool showLogin = true;
+  AuthService _authService = AuthService();
 
   Widget _logo() {
     return Padding(
@@ -122,12 +126,52 @@ class _AuthorizationPageState extends State<AuthorizationPage> {
     );
   }
 
-  void _buttonAction(){
+  void _loginButtonAction() async{
     _email = _emailController.text;
     _password = _passwordController.text;
 
-    _emailController.clear();
-    _passwordController.clear();
+    if (_email.isEmpty || _password.isEmpty) return;
+
+    AppUser user = await _authService.signInWithEmailAndPassword(_email.trim(), _password.trim());
+
+    if(user == null) {
+      Fluttertoast.showToast(
+          msg: "Can't sign in, please check your email/password",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0
+      );
+    } else {
+      _emailController.clear();
+      _passwordController.clear();
+    }
+  }
+
+  void _registerButtonAction() async{
+    _email = _emailController.text;
+    _password = _passwordController.text;
+
+    if (_email.isEmpty || _password.isEmpty) return;
+
+    AppUser user = await _authService.registerWithEmailAndPassword(_email.trim(), _password.trim());
+
+    if(user == null) {
+      Fluttertoast.showToast(
+          msg: "Can't register you, please check your email/password",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0
+      );
+    } else {
+      _emailController.clear();
+      _passwordController.clear();
+    }
   }
 
   @override
@@ -140,7 +184,7 @@ class _AuthorizationPageState extends State<AuthorizationPage> {
           SizedBox(height: 20,),
           (showLogin
               ? Column(children: [
-                _form(label: 'LOGIN', onSubmit: _buttonAction),
+                _form(label: 'LOGIN', onSubmit: _loginButtonAction),
                 Padding(
                   padding: EdgeInsets.all(10),
                   child: GestureDetector(
@@ -154,7 +198,7 @@ class _AuthorizationPageState extends State<AuthorizationPage> {
                 )
               ],)
             : Column(children: [
-                _form(label: 'Register', onSubmit: _buttonAction),
+                _form(label: 'Register', onSubmit: _registerButtonAction),
                 Padding(
                   padding: EdgeInsets.all(10),
                   child: GestureDetector(

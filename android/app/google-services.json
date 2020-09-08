@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "481628369403",
+    "firebase_url": "https://maxfit-dev-eab55.firebaseio.com",
+    "project_id": "maxfit-dev-eab55",
+    "storage_bucket": "maxfit-dev-eab55.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:481628369403:android:1511c8826396ec6db7db5e",
+        "android_client_info": {
+          "package_name": "com.fenyagg.maxfit"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "481628369403-qedo1vj6ogbtbup37bfo63oto1lq5m4u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyATbn_GkGSgQcnbRLgKUzBDAJRMTsOBDS0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "481628369403-qedo1vj6ogbtbup37bfo63oto1lq5m4u.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

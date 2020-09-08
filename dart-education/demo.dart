@@ -21,47 +21,46 @@
 
 
 
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: HelloWidget(helloString: 'Hello string 123'),
-    );
-    /**/
-  }
-}
-
-
-
-class HelloWidget extends StatelessWidget {
-  final String helloString; // обычное свойство
-  HelloWidget({this.helloString}); // обычный конструктор
-
-  @override
-  Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.ltr,
-      child: Center(
-        child: GestureDetector(
-            onTap: () { // одно из свойств GestureDetector
-              // Этот метод будет вызван, когда дочерний элемент будет нажат
-              print('You pressed me');
-            },
-            child: Container(
-              child: Text('$helloString'),
-            )
-        ),
-      ),
-    );
-  }
-}
+// void main() {
+//   runApp(MyApp());
+// }
+//
+// class MyApp extends StatelessWidget {
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       title: 'Flutter',
+//       theme: ThemeData(
+//         primarySwatch: Colors.blue,
+//       ),
+//       home: HelloWidget(helloString: 'Hello string 123'),
+//     );
+//   }
+// }
+//
+//
+//
+// class HelloWidget extends StatelessWidget {
+//   final String helloString; // обычное свойство
+//   HelloWidget({this.helloString}); // обычный конструктор
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Directionality(
+//       textDirection: TextDirection.ltr,
+//       child: Center(
+//         child: GestureDetector(
+//             onTap: () { // одно из свойств GestureDetector
+//               // Этот метод будет вызван, когда дочерний элемент будет нажат
+//               print('You pressed me');
+//             },
+//             child: Container(
+//               child: Text('$helloString'),
+//             )
+//         ),
+//       ),
+//     );
+//   }
+// }
 
 
 
