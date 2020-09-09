@@ -16,11 +16,11 @@ class BottomWaveClipper extends CustomClipper<Path> {
     path.lineTo(size.width, size.height);
     path.lineTo(0.0, size.height);
     path.lineTo(0.0, size.height + 20);
-    var secondControlPoint = Offset(size.width - (size.width / 50), size.height);
+    var secondControlPoint =
+        Offset(size.width - (size.width / 50), size.height);
     var secondEndPoint = Offset(size.width, 0.0);
-    path.quadraticBezierTo(
-        secondControlPoint.dx, secondControlPoint.dy, secondEndPoint.dx, secondEndPoint.dy
-    );
+    path.quadraticBezierTo(secondControlPoint.dx, secondControlPoint.dy,
+        secondEndPoint.dx, secondEndPoint.dy);
     return path;
   }
 
@@ -42,13 +42,21 @@ class _AuthorizationPageState extends State<AuthorizationPage> {
       padding: EdgeInsets.only(top: 100),
       child: Container(
         child: Align(
-          child: Text('MAXFIT', style: TextStyle(fontSize: 45, fontWeight: FontWeight.bold, color: Colors.white)),
+          child: Text('MAXFIT',
+              style: TextStyle(
+                  fontSize: 45,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white)),
         ),
       ),
     );
   }
 
-  Widget _input({Icon icon, String hint, TextEditingController controller, bool obscure}) {
+  Widget _input(
+      {Icon icon,
+      String hint,
+      TextEditingController controller,
+      bool obscure}) {
     return Container(
       padding: EdgeInsets.only(left: 20, right: 20),
       child: TextField(
@@ -56,18 +64,22 @@ class _AuthorizationPageState extends State<AuthorizationPage> {
         obscureText: obscure,
         style: TextStyle(fontSize: 20, color: Colors.white),
         decoration: InputDecoration(
-          hintStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.white30),
-          hintText: hint,
-          focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white, width: 3)),
-          enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white54, width: 1)),
-          prefixIcon: Padding(
-            padding: EdgeInsets.only(left: 10, right: 10),
-            child: IconTheme(
-              data: IconThemeData(color: Colors.white),
-              child: icon,
-            ),
-          )
-        ),
+            hintStyle: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+                color: Colors.white30),
+            hintText: hint,
+            focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.white, width: 3)),
+            enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.white54, width: 1)),
+            prefixIcon: Padding(
+              padding: EdgeInsets.only(left: 10, right: 10),
+              child: IconTheme(
+                data: IconThemeData(color: Colors.white),
+                child: icon,
+              ),
+            )),
       ),
     );
   }
@@ -79,7 +91,10 @@ class _AuthorizationPageState extends State<AuthorizationPage> {
       color: Colors.white,
       child: Text(
         label,
-        style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).primaryColor, fontSize: 20),
+        style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).primaryColor,
+            fontSize: 20),
       ),
       onPressed: onClick,
     );
@@ -87,28 +102,37 @@ class _AuthorizationPageState extends State<AuthorizationPage> {
 
   Widget _form({String label, void onSubmit()}) {
     return Container(
-      child: Column(
-        children: <Widget>[
-          Padding(
-            padding: EdgeInsets.only(bottom: 20, top: 10),
-            child: _input(controller: _emailController, hint: 'Email', icon: Icon(Icons.email), obscure: false),
+        child: Column(
+      children: <Widget>[
+        Padding(
+          padding: EdgeInsets.only(bottom: 20, top: 10),
+          child: _input(
+              controller: _emailController,
+              hint: 'Email',
+              icon: Icon(Icons.email),
+              obscure: false),
+        ),
+        Padding(
+          padding: EdgeInsets.only(bottom: 20),
+          child: _input(
+              controller: _passwordController,
+              hint: 'Password',
+              icon: Icon(Icons.lock),
+              obscure: true),
+        ),
+        SizedBox(
+          height: 20,
+        ),
+        Padding(
+          padding: EdgeInsets.only(left: 20, right: 20),
+          child: Container(
+            height: 50,
+            width: MediaQuery.of(context).size.width,
+            child: _button(label: label, onClick: onSubmit),
           ),
-          Padding(
-            padding: EdgeInsets.only(bottom: 20),
-            child: _input(controller: _passwordController, hint: 'Password', icon: Icon(Icons.lock), obscure: true),
-          ),
-          SizedBox(height: 20,),
-          Padding(
-            padding: EdgeInsets.only(left: 20, right: 20 ),
-            child: Container(
-              height: 50,
-              width: MediaQuery.of(context).size.width,
-              child: _button(label: label, onClick: onSubmit),
-            ),
-          )
-        ],
-      )
-    );
+        )
+      ],
+    ));
   }
 
   Widget _bottomWave() {
@@ -126,15 +150,16 @@ class _AuthorizationPageState extends State<AuthorizationPage> {
     );
   }
 
-  void _loginButtonAction() async{
+  void _loginButtonAction() async {
     _email = _emailController.text;
     _password = _passwordController.text;
 
     if (_email.isEmpty || _password.isEmpty) return;
 
-    AppUser user = await _authService.signInWithEmailAndPassword(_email.trim(), _password.trim());
+    AppUser user = await _authService.signInWithEmailAndPassword(
+        _email.trim(), _password.trim());
 
-    if(user == null) {
+    if (user == null) {
       Fluttertoast.showToast(
           msg: "Can't sign in, please check your email/password",
           toastLength: Toast.LENGTH_SHORT,
@@ -142,23 +167,23 @@ class _AuthorizationPageState extends State<AuthorizationPage> {
           timeInSecForIosWeb: 1,
           backgroundColor: Colors.red,
           textColor: Colors.white,
-          fontSize: 16.0
-      );
+          fontSize: 16.0);
     } else {
       _emailController.clear();
       _passwordController.clear();
     }
   }
 
-  void _registerButtonAction() async{
+  void _registerButtonAction() async {
     _email = _emailController.text;
     _password = _passwordController.text;
 
     if (_email.isEmpty || _password.isEmpty) return;
 
-    AppUser user = await _authService.registerWithEmailAndPassword(_email.trim(), _password.trim());
+    AppUser user = await _authService.registerWithEmailAndPassword(
+        _email.trim(), _password.trim());
 
-    if(user == null) {
+    if (user == null) {
       Fluttertoast.showToast(
           msg: "Can't register you, please check your email/password",
           toastLength: Toast.LENGTH_SHORT,
@@ -166,8 +191,7 @@ class _AuthorizationPageState extends State<AuthorizationPage> {
           timeInSecForIosWeb: 1,
           backgroundColor: Colors.red,
           textColor: Colors.white,
-          fontSize: 16.0
-      );
+          fontSize: 16.0);
     } else {
       _emailController.clear();
       _passwordController.clear();
@@ -181,38 +205,51 @@ class _AuthorizationPageState extends State<AuthorizationPage> {
       body: Column(
         children: <Widget>[
           _logo(),
-          SizedBox(height: 20,),
-          (showLogin
-              ? Column(children: [
-                _form(label: 'LOGIN', onSubmit: _loginButtonAction),
-                Padding(
-                  padding: EdgeInsets.all(10),
-                  child: GestureDetector(
-                    child: Text('Not registered yet ? Register!', style: TextStyle(fontSize: 20, color: Colors.white),),
-                    onTap: () {
-                      setState(() {
-                        showLogin = false;
-                      });
-                    },
-                  ),
-                )
-              ],)
-            : Column(children: [
-                _form(label: 'Register', onSubmit: _registerButtonAction),
-                Padding(
-                  padding: EdgeInsets.all(10),
-                  child: GestureDetector(
-                    child: Text('Already registered ? Login!', style: TextStyle(fontSize: 20, color: Colors.white),),
-                    onTap: () {
-                      setState(() {
-                        showLogin = true;
-                      });
-                    },
-                  ),
-                )
-            ],)
+          SizedBox(
+            height: 20,
           ),
-          SizedBox(height: 50,),
+          (showLogin
+              ? Column(
+                  children: [
+                    _form(label: 'LOGIN', onSubmit: _loginButtonAction),
+                    Padding(
+                      padding: EdgeInsets.all(10),
+                      child: GestureDetector(
+                        child: Text(
+                          'Not registered yet ? Register!',
+                          style: TextStyle(fontSize: 20, color: Colors.white),
+                        ),
+                        onTap: () {
+                          setState(() {
+                            showLogin = false;
+                          });
+                        },
+                      ),
+                    )
+                  ],
+                )
+              : Column(
+                  children: [
+                    _form(label: 'Register', onSubmit: _registerButtonAction),
+                    Padding(
+                      padding: EdgeInsets.all(10),
+                      child: GestureDetector(
+                        child: Text(
+                          'Already registered ? Login!',
+                          style: TextStyle(fontSize: 20, color: Colors.white),
+                        ),
+                        onTap: () {
+                          setState(() {
+                            showLogin = true;
+                          });
+                        },
+                      ),
+                    )
+                  ],
+                )),
+          SizedBox(
+            height: 50,
+          ),
           _bottomWave(),
         ],
       ),

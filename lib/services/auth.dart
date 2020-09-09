@@ -29,6 +29,7 @@ class AuthService {
   Future logout() async {
     await _fAuth.signOut();
   }
+
   Stream<AppUser> get currentUser {
     return _fAuth.authStateChanges()
         .map((User user) => user != null ? AppUser.fromFirebase(user) : null);
