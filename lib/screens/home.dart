@@ -2,6 +2,7 @@ import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/components/active-workouts.dart';
 import 'package:flutter_app/components/workouts-list.dart';
+import 'package:flutter_app/screens/add-workout.dart';
 import 'package:flutter_app/services/auth.dart';
 
 class HomePage extends StatefulWidget {
@@ -42,6 +43,14 @@ class _HomePageState extends State<HomePage> {
         animationCurve: Curves.easeInOut,
         animationDuration: Duration(milliseconds: 300),
         onTap: (int tapTargetIndex) => setState(() => _sectionIndex = tapTargetIndex),
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        backgroundColor: Colors.white,
+        foregroundColor: Theme.of(context).primaryColor,
+        onPressed: () {
+          Navigator.push(context, MaterialPageRoute(builder: (ctx) => AddWorkout()));
+        },
       ),
       /* bottomNavigationBar: BottomNavigationBar(
         items: <BottomNavigationBarItem>[

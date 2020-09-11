@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/domain/appUser.dart';
+import 'package:flutter_app/domain/workout-level.dart';
 import 'package:flutter_app/domain/workout.dart';
+import 'package:flutter_app/services/database.dart';
+import 'package:provider/provider.dart';
 
 class WorkoutsList extends StatefulWidget {
   @override
@@ -7,69 +11,52 @@ class WorkoutsList extends StatefulWidget {
 }
 
 class _WorkoutsListState extends State<WorkoutsList> {
-  final workouts = <Workout>[
-    Workout(title: 'Test 1', author: 'Max', description: 'First wt description', level: 'Beginner'),
-    Workout(
-        title: 'Test 2', author: 'Ivan', description: 'First wt description 2', level: 'Beginner+'),
-    Workout(
-        title: 'Test 3',
-        author: 'Vadim',
-        description: 'First wt description 3',
-        level: 'Beginner++'),
-    Workout(
-        title: 'Test 4',
-        author: 'Alexey',
-        description: 'First wt description 4',
-        level: 'Beginner+'),
-    Workout(
-        title: 'Test 5',
-        author: 'Roma',
-        description: 'First wt description 5',
-        level: 'Beginner++'),
-  ];
+  List<Workout> workouts = [];
+  DatabaseService db = DatabaseService();
+  AppUser user;
 
   var filterOnlyMyWorkouts = false;
-  var filterTitle = '';
-  var filterTitleController = TextEditingController();
-  var filterLevel = '';
+  var filterLevel = EWorkoutLevel.Any;
 
   var filterText = '';
   var filterHeight = 0.0;
 
-  List<Workout> filter() {
+  filter({bool clear = false}) {
+    if (clear) {
+      filterOnlyMyWorkouts = false;
+      filterLevel = EWorkoutLevel.Any;
+    }
     setState(() {
       filterText = filterOnlyMyWorkouts ? 'My Workouts' : 'All workouts';
-      filterText += '/' + filterLevel;
-      if (filterTitle.isNotEmpty) filterText += '/' + filterTitle;
+      filterText += '/' + workoutLevelsMap[filterLevel];
       filterHeight = 0;
     });
 
-    var list = workouts;
-    return list;
+    loadData();
   }
 
-  List<Workout> clearFilter() {
-    setState(() {
-      filterText = 'All workouts/Any Level';
-      filterOnlyMyWorkouts = false;
-      filterTitle = '';
-      filterLevel = 'Any Level';
-      filterTitleController.clear();
-      filterHeight = 0;
+  loadData() async {
+    var stream = db.getWorkouts(
+      author: null,
+      level: filterLevel != EWorkoutLevel.Any ? filterLevel : null,
+    );
+    stream.listen((List<Workout> data) {
+      setState(() {
+        workouts = data;
+      });
     });
-
-    var list = workouts;
-    return list;
   }
 
   @override
   void initState() {
-    clearFilter();
+    filter(clear: true);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    user = Provider.of<AppUser>(context);
+
     var workoutsList = Expanded(
       child: ListView.builder(
           itemCount: workouts.length,
@@ -82,6 +69,7 @@ class _WorkoutsListState extends State<WorkoutsList> {
                 child: ListTile(
                   contentPadding: EdgeInsets.symmetric(horizontal: 10),
                   leading: Container(
+                    height: 40,
                     padding: EdgeInsets.only(right: 12),
                     child: Icon(
                       Icons.fitness_center,
@@ -127,21 +115,11 @@ class _WorkoutsListState extends State<WorkoutsList> {
         ),
         onPressed: () {
           setState(() {
-            filterHeight = (filterHeight == 0.0 ? 280.0 : 0.0);
+            filterHeight = (filterHeight == 0.0 ? 200.0 : 0.0);
           });
         },
       ),
     );
-    var levelMenuItems =
-        <String>['Any Level', 'Beginner', 'Intermediate', 'Advanced'].map((String value) {
-      return new DropdownMenuItem<String>(
-        value: value,
-        child: new Text(
-          value,
-          style: TextStyle(color: Colors.black),
-        ),
-      );
-    }).toList();
 
     var filterForm = AnimatedContainer(
       margin: EdgeInsets.symmetric(vertical: 0.0, horizontal: 7),
@@ -157,17 +135,19 @@ class _WorkoutsListState extends State<WorkoutsList> {
                   ),
                   value: filterOnlyMyWorkouts,
                   onChanged: (bool val) => setState(() => filterOnlyMyWorkouts = val)),
-              DropdownButtonFormField<String>(
+              DropdownButtonFormField<EWorkoutLevel>(
                 decoration: const InputDecoration(labelText: 'Level'),
-                items: levelMenuItems,
+                items: EWorkoutLevel.values
+                    .map((workoutValue) => DropdownMenuItem(
+                          value: workoutValue,
+                          child: Text(
+                            WorkOutLevel(workoutValue).title,
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ))
+                    .toList(),
                 value: filterLevel,
-                onChanged: (String val) => setState(() => filterLevel = val),
-              ),
-              TextFormField(
-                controller: filterTitleController,
-                decoration: const InputDecoration(labelText: 'Title'),
-                onChanged: (String val) => setState(() => filterTitle = val),
-                style: TextStyle(color: Colors.black),
+                onChanged: (EWorkoutLevel val) => setState(() => filterLevel = val),
               ),
               Row(
                 children: <Widget>[
@@ -186,7 +166,7 @@ class _WorkoutsListState extends State<WorkoutsList> {
                     flex: 1,
                     child: RaisedButton(
                       onPressed: () {
-                        clearFilter();
+                        filter(clear: true);
                       },
                       child: Text("Clear", style: TextStyle(color: Colors.white)),
                       color: Colors.red,
@@ -218,19 +198,22 @@ Widget subtitle(BuildContext context, Workout workout) {
   double indicatorLevel = 0;
 
   switch (workout.level) {
-    case "Beginner":
+    case EWorkoutLevel.Beginner:
       color = Colors.green;
       indicatorLevel = 0.33;
       break;
-    case "Beginner+":
+    case EWorkoutLevel.Intermediate:
       color = Colors.yellow;
       indicatorLevel = 0.66;
       break;
-    case "Beginner++":
+    case EWorkoutLevel.Advanced:
       color = Colors.red;
       indicatorLevel = 1;
       break;
+    default:
+      break;
   }
+
   return Row(
     children: <Widget>[
       Expanded(
@@ -243,7 +226,7 @@ Widget subtitle(BuildContext context, Workout workout) {
       SizedBox(width: 10),
       Expanded(
         flex: 3,
-        child: Text(workout.level,
+        child: Text(WorkOutLevel(workout.level).title,
             style: TextStyle(color: Theme.of(context).textTheme.subtitle1.color)),
       )
     ],
