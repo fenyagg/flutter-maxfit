@@ -19,7 +19,7 @@ class DatabaseService {
     }
 
     return query.snapshots().map((QuerySnapshot data) => data.docs.map((DocumentSnapshot doc) {
-          return Workout.fromMap(uid: doc.id, workoutMap: doc.data());
+          return Workout.fromJson(uid: doc.id, workoutMap: doc.data());
         }).toList());
   }
 }

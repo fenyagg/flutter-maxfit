@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/domain/appUser.dart';
 import 'package:flutter_app/domain/workout-level.dart';
 import 'package:flutter_app/domain/workout.dart';
+import 'package:flutter_app/screens/add-workout.dart';
 import 'package:flutter_app/services/database.dart';
 import 'package:provider/provider.dart';
 
@@ -10,10 +11,11 @@ class WorkoutsList extends StatefulWidget {
   _WorkoutsListState createState() => _WorkoutsListState();
 }
 
-class _WorkoutsListState extends State<WorkoutsList> {
+class _WorkoutsListState extends State<WorkoutsList> with TickerProviderStateMixin {
   List<Workout> workouts = [];
   DatabaseService db = DatabaseService();
   AppUser user;
+  String _selectedWorkoutId;
 
   var filterOnlyMyWorkouts = false;
   var filterLevel = EWorkoutLevel.Any;
@@ -47,10 +49,21 @@ class _WorkoutsListState extends State<WorkoutsList> {
     });
   }
 
+  AnimationController _controller;
+  Animation<Color> _animation;
+
+  animate() {}
+
   @override
   void initState() {
-    filter(clear: true);
     super.initState();
+    filter(clear: true);
+
+    _controller = AnimationController(vsync: this, duration: Duration());
+    _animation = ColorTween(begin: Colors.black, end: Colors.white).animate(_controller)
+      ..addListener(() {
+        setState(() {});
+      });
   }
 
   @override
@@ -62,6 +75,7 @@ class _WorkoutsListState extends State<WorkoutsList> {
           itemCount: workouts.length,
           itemBuilder: (context, i) {
             return Card(
+              color: _selectedWorkoutId == workouts[i].uid ? _animation?.value : Colors.black,
               elevation: 2.0,
               margin: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               child: Container(
@@ -89,6 +103,22 @@ class _WorkoutsListState extends State<WorkoutsList> {
                         fontWeight: FontWeight.bold),
                   ),
                   subtitle: subtitle(context, workouts[i]),
+                  onTap: () async {
+                    await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (ctx) => AddWorkout(
+                                  workout: workouts[i],
+                                )));
+                    _selectedWorkoutId = workouts[i].uid;
+                    _controller.duration = Duration(milliseconds: 0);
+                    _controller.forward();
+
+                    Future.delayed(const Duration(milliseconds: 250), () {
+                      _controller.duration = Duration(milliseconds: 200);
+                      _controller.reverse();
+                    });
+                  },
                 ),
               ),
             );

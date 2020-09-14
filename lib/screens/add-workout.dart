@@ -6,20 +6,22 @@ import 'package:flutter_app/services/database.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 
 class AddWorkout extends StatefulWidget {
+  final Workout workout;
+
+  const AddWorkout({Key key, this.workout}) : super(key: key);
+
   @override
   _AddWorkoutState createState() => _AddWorkoutState();
 }
 
 class _AddWorkoutState extends State<AddWorkout> {
   final _fbKey = GlobalKey<FormBuilderState>();
-  Workout _workout = Workout(level: EWorkoutLevel.Beginner);
 
-  _saveWorkOut() {
+  _saveWorkOut() async {
     if (_fbKey.currentState.saveAndValidate()) {
-      var nextWorkout = Workout.fromMap(workoutMap: _fbKey.currentState.value);
-      DatabaseService()
-          .addOrUpdateWorkout(nextWorkout)
-          .then((value) => Navigator.pop(context, nextWorkout))
+      return DatabaseService()
+          .addOrUpdateWorkout(Workout.fromMap(_fbKey.currentState.value))
+          .then((value) => Navigator.pop(context))
           .catchError((error) => print(error));
     }
   }
@@ -41,13 +43,17 @@ class _AddWorkoutState extends State<AddWorkout> {
         child: FormBuilder(
           key: _fbKey,
           autovalidate: true,
-          initialValue: {},
-          readOnly: false,
+          initialValue: {
+            'uid': widget.workout?.uid,
+            'title': widget.workout?.title,
+            'author': widget.workout?.author,
+            'description': widget.workout?.description,
+            'level': widget.workout?.level,
+          },
           child: Column(
             children: <Widget>[
               FormBuilderTextField(
                   attribute: 'title',
-                  initialValue: "",
                   decoration: InputDecoration(
                     labelText: "Title*",
                   ),
@@ -58,7 +64,6 @@ class _AddWorkoutState extends State<AddWorkout> {
                   ]),
               FormBuilderTextField(
                   attribute: 'author',
-                  initialValue: "",
                   decoration: InputDecoration(
                     labelText: "Author*",
                   ),
@@ -71,7 +76,6 @@ class _AddWorkoutState extends State<AddWorkout> {
                   attribute: 'description',
                   minLines: 2,
                   maxLines: 2,
-                  initialValue: "",
                   decoration: InputDecoration(
                     labelText: "Description",
                   ),
@@ -81,7 +85,6 @@ class _AddWorkoutState extends State<AddWorkout> {
                   ]),
               FormBuilderDropdown(
                 attribute: 'level',
-                initialValue: _workout.level,
                 items: workoutLevelsMap.keys
                     .where((element) => element != EWorkoutLevel.Any)
                     .map((workoutValue) => DropdownMenuItem(
